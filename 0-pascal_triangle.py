@@ -2,7 +2,7 @@
 """Pascal Triangle Interview Challenge"""
 
 
-def generate_pascal_triangle(rows):
+def pascal_triangle(rows):
     """Generates Pascal's Triangle up to the given number of rows."""
     if rows <= 0:
         return []
@@ -19,7 +19,7 @@ def generate_pascal_triangle(rows):
             # Calculate values for the inner columns
             if 0 < col_index < len(new_row):
                 left_value = pascal_triangle[current_row - 1][col_index]
-                upper_left_value=pascal_triangle[current_row -1][col_index -1]
+                upper_left_value=pascal_triangle[current_row - 1][col_index - 1]
                 new_row[col_index] = left_value + upper_left_value
 
         pascal_triangle.append(new_row)
