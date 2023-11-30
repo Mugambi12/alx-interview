@@ -16,8 +16,7 @@ def pascal_triangle(n):
         new_row[len(new_row) - 1] = 1
 
         for col_index in range(1, cur_row):
-            if 0 < col_index < len(new_row):
-            #if col_index > 0 and col_index < len(new_row):
+            if col_index > 0 and col_index < len(new_row):
                 left_value = pascal_triangle[cur_row - 1][col_index]
                 upper_left_value = pascal_triangle[cur_row - 1][col_index - 1]
                 new_row[col_index] = left_value + upper_left_value
