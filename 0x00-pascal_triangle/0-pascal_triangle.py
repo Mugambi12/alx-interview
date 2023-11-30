@@ -2,26 +2,26 @@
 """Pascal Triangle Interview Challenge"""
 
 
-def pascal_triangle(rows):
-    """Generates Pascal's Triangle up to the given number of rows."""
-    if rows <= 0:
+def pascal_triangle(n):
+    """returns a list of lists of numbers
+    representing the pascal triangle"""
+    if n <= 0:
         return []
 
-    pascal_triangle = []
+    pascal_triangle = [0] * n
 
-    for cur_row in range(rows):
-        # Initialize a new row with 1s at the ends
-        new_row = [0] * (cur_row + 1)
+    for i in range(n):
+        # define a row and fill first and last idx with 1
+        new_row = [0] * (i+1)
         new_row[0] = 1
-        new_row[-1] = 1
+        new_row[len(new_row) - 1] = 1
 
-        for col_index in range(1, cur_row):
-            # Calculate values for the inner columns
-            if 0 < col_index < len(new_row):
-                left_value = pascal_triangle[cur_row - 1][col_index]
-                upper_left_value=pascal_triangle[cur_row - 1][col_index - 1]
-                new_row[col_index] = left_value + upper_left_value
+        for j in range(1, i):
+            if j > 0 and j < len(new_row):
+                a = pascal_triangle[i - 1][j]
+                b = pascal_triangle[i - 1][j - 1]
+                new_row[j] = a + b
 
-        pascal_triangle.append(new_row)
+        pascal_triangle[i] = new_row
 
     return pascal_triangle
