@@ -3,7 +3,6 @@
 """
 import sys
 
-
 solutions = []
 """The list of possible solutions to the N queens problem.
 """
@@ -28,7 +27,7 @@ def get_input():
         sys.exit(1)
     try:
         n = int(sys.argv[1])
-    except Exception:
+    except ValueError:
         print("N must be a number")
         sys.exit(1)
     if n < 4:
@@ -47,9 +46,7 @@ def is_attacking(pos0, pos1):
     Returns:
         bool: True if the queens are in an attacking position else False.
     """
-    if (pos0[0] == pos1[0]) or (pos0[1] == pos1[1]):
-        return True
-    return abs(pos0[0] - pos1[0]) == abs(pos0[1] - pos1[1])
+    return pos0[0] == pos1[0] or pos0[1] == pos1[1] or abs(pos0[0] - pos1[0]) == abs(pos0[1] - pos1[1])
 
 
 def group_exists(group):
@@ -63,12 +60,7 @@ def group_exists(group):
     """
     global solutions
     for stn in solutions:
-        i = 0
-        for stn_pos in stn:
-            for grp_pos in group:
-                if stn_pos[0] == grp_pos[0] and stn_pos[1] == grp_pos[1]:
-                    i += 1
-        if i == n:
+        if all(stn_pos in group for stn_pos in stn):
             return True
     return False
 
@@ -89,19 +81,18 @@ def build_solution(row, group):
     else:
         for col in range(n):
             a = (row * n) + col
-            matches = zip(list([pos[a]]) * len(group), group)
-            used_positions = map(lambda x: is_attacking(x[0], x[1]), matches)
-            group.append(pos[a].copy())
-            if not any(used_positions):
+            used_positions = any(is_attacking(pos[a], grp_pos) for grp_pos in group)
+            if not used_positions:
+                group.append(pos[a].copy())
                 build_solution(row + 1, group)
-            group.pop(len(group) - 1)
+                group.pop()
 
 
 def get_solutions():
     """Gets the solutions for the given chessboard size.
     """
     global pos, n
-    pos = list(map(lambda x: [x // n, x % n], range(n ** 2)))
+    pos = [(x // n, x % n) for x in range(n ** 2)]
     a = 0
     group = []
     build_solution(a, group)
