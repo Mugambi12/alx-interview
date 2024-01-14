@@ -3,87 +3,86 @@
 
 import sys
 
+
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         print("Usage: nqueens N")
         sys.exit(1)
 
     try:
-        board_size = int(sys.argv[1])
+        n = int(sys.argv[1])
     except ValueError:
         print('N must be a number')
         exit(1)
 
-    if board_size < 4:
+    if n < 4:
         print('N must be at least 4')
         exit(1)
 
     solutions = []
-    queens_positions = []  # coordinates format [row, column]
+    placed_queens = []  # coordinates format [row, column]
     stop = False
-    current_row = 0
-    current_col = 0
+    r = 0
+    c = 0
 
-    # iterate through rows
-    while current_row < board_size:
-        go_back = False
-        # iterate through columns
-        while current_col < board_size:
-            # check if the current column is safe
+    # iterate thru rows
+    while r < n:
+        goback = False
+        # iterate thru columns
+        while c < n:
+            # check is current column is safe
             safe = True
-            for queen_cords in queens_positions:
-                col = queen_cords[1]
-                if (col == current_col or
-                        col + (current_row - queen_cords[0]) == current_col or
-                        col - (current_row - queen_cords[0]) == current_col):
+            for cord in placed_queens:
+                col = cord[1]
+                if(col == c or col + (r-cord[0]) == c or
+                        col - (r-cord[0]) == c):
                     safe = False
                     break
 
             if not safe:
-                if current_col == board_size - 1:
-                    go_back = True
+                if c == n - 1:
+                    goback = True
                     break
-                current_col += 1
+                c += 1
                 continue
 
             # place queen
-            coordinates = [current_row, current_col]
-            queens_positions.append(coordinates)
-            # if the last row, append solution and reset to the last unfinished row
-            # and the last safe column in that row
-            if current_row == board_size - 1:
-                solutions.append(queens_positions[:])
-                for queen_cords in queens_positions:
-                    if queen_cords[1] < board_size - 1:
-                        current_row = queen_cords[0]
-                        current_col = queen_cords[1]
-                for _ in range(board_size - current_row):
-                    queens_positions.pop()
-                if current_row == (
-                        board_size - 1 and current_col == board_size - 1):
-                    queens_positions = []
+            cords = [r, c]
+            placed_queens.append(cords)
+            # if last row, append solution and reset all to last unfinished row
+            # and last safe column in that row
+            if r == n - 1:
+                solutions.append(placed_queens[:])
+                for cord in placed_queens:
+                    if cord[1] < n - 1:
+                        r = cord[0]
+                        c = cord[1]
+                for i in range(n - r):
+                    placed_queens.pop()
+                if r == n - 1 and c == n - 1:
+                    placed_queens = []
                     stop = True
-                current_row -= 1
-                current_col += 1
+                r -= 1
+                c += 1
             else:
-                current_col = 0
+                c = 0
             break
         if stop:
             break
-        # on fail: go back to the previous row
-        # and continue from the last safe column + 1
-        if go_back:
-            current_row -= 1
-            while current_row >= 0:
-                current_col = queens_positions[current_row][1] + 1
-                del queens_positions[current_row]
-                if current_col < board_size:
+        # on fail: go back to previous row
+        # and continue from last safe column + 1
+        if goback:
+            r -= 1
+            while r >= 0:
+                c = placed_queens[r][1] + 1
+                del placed_queens[r]  # delete previous queen coordinates
+                if c < n:
                     break
-                current_row -= 1
-            if current_row < 0:
+                r -= 1
+            if r < 0:
                 break
             continue
-        current_row += 1
+        r += 1
 
     for idx, val in enumerate(solutions):
         if idx == len(solutions) - 1:
