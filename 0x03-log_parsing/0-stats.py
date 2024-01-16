@@ -1,6 +1,5 @@
 #!/usr/bin/python3
-'''a script that reads stdin line by line and computes metrics'''
-
+'''A script that reads stdin line by line and computes metrics'''
 
 import sys
 
@@ -13,11 +12,11 @@ try:
     for line in sys.stdin:
         line_list = line.split(" ")
         if len(line_list) > 4:
-            code = line_list[-2]
-            size = int(line_list[-1])
-            if code in cache.keys():
-                cache[code] += 1
-            total_size += size
+            status_code = line_list[-2]
+            file_size = int(line_list[-1])
+            if status_code in cache.keys():
+                cache[status_code] += 1
+            total_size += file_size
             counter += 1
 
         if counter == 10:
@@ -27,8 +26,11 @@ try:
                 if value != 0:
                     print('{}: {}'.format(key, value))
 
-except Exception as err:
+except KeyboardInterrupt:
     pass
+except Exception as err:
+    # Handle other exceptions if necessary
+    print(f"Error: {err}")
 
 finally:
     print('File size: {}'.format(total_size))
