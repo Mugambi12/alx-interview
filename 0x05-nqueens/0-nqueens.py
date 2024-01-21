@@ -30,8 +30,8 @@ def solve_nqueens_util(board, col, N):
     """
     Utility function to solve N Queens problem using backtracking
     """
-    if col >= N:
-        print(board)
+    if col == N:
+        print([[i, j] for i in range(N) for j in range(N) if board[i][j] == 1])
         return True
 
     res = False
