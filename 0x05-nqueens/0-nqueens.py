@@ -1,104 +1,73 @@
 #!/usr/bin/python3
-"""N queens solution finder module.
 """
+N Queens puzzle solver
+"""
+
 import sys
 
-solutions = []
-"""The list of possible solutions to the N queens problem.
-"""
-n = 0
-"""The size of the chessboard.
-"""
-pos = None
-"""The list of possible positions on the chessboard.
-"""
-
-
-def get_input():
-    """Retrieves and validates this program's argument.
-
-    Returns:
-        int: The size of the chessboard.
+def is_safe(board, row, col, N):
     """
-    global n
-    n = 0
+    Check if it's safe to place a queen at board[row][col]
+    """
+    # Check this row on left side
+    for i in range(col):
+        if board[row][i] == 1:
+            return False
+
+    # Check upper diagonal on left side
+    for i, j in zip(range(row, -1, -1), range(col, -1, -1)):
+        if board[i][j] == 1:
+            return False
+
+    # Check lower diagonal on left side
+    for i, j in zip(range(row, N, 1), range(col, -1, -1)):
+        if board[i][j] == 1:
+            return False
+
+    return True
+
+def solve_nqueens_util(board, col, N):
+    """
+    Utility function to solve N Queens problem using backtracking
+    """
+    if col == N:
+        print([[i, j] for i in range(N) for j in range(N) if board[i][j] == 1])
+        return True
+
+    res = False
+    for i in range(N):
+        if is_safe(board, i, col, N):
+            board[i][col] = 1
+            res = solve_nqueens_util(board, col + 1, N) or res
+            board[i][col] = 0  # backtrack if placing a queen in the current position doesn't lead to a solution
+
+    return res
+
+def solve_nqueens(N):
+    """
+    Solve N Queens problem and print all solutions
+    """
+    if not isinstance(N, int):
+        print("N must be a number")
+        sys.exit(1)
+
+    if N < 4:
+        print("N must be at least 4")
+        sys.exit(1)
+
+    board = [[0 for _ in range(N)] for _ in range(N)]
+
+    if not solve_nqueens_util(board, 0, N):
+        print("No solution found")
+
+if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: nqueens N")
         sys.exit(1)
+
     try:
-        n = int(sys.argv[1])
+        N = int(sys.argv[1])
+        solve_nqueens(N)
     except ValueError:
         print("N must be a number")
         sys.exit(1)
-    if n < 4:
-        print("N must be at least 4")
-        sys.exit(1)
-    return n
-
-
-def is_attacking(pos0, pos1):
-    """Checks if the positions of two queens are in an attacking mode.
-
-    Args:
-        pos0 (list or tuple): The first queen's position.
-        pos1 (list or tuple): The second queen's position.
-
-    Returns:
-        bool: True if the queens are in an attacking position else False.
-    """
-    return pos0[0] == pos1[0] or pos0[1] == pos1[1] or abs(pos0[0] - pos1[0]) == abs(pos0[1] - pos1[1])
-
-
-def group_exists(group):
-    """Checks if a group exists in the list of solutions.
-
-    Args:
-        group (list of integers): A group of possible positions.
-
-    Returns:
-        bool: True if it exists, otherwise False.
-    """
-    global solutions
-    for stn in solutions:
-        if all(stn_pos in group for stn_pos in stn):
-            return True
-    return False
-
-
-def build_solution(row, group):
-    """Builds a solution for the n queens problem.
-
-    Args:
-        row (int): The current row in the chessboard.
-        group (list of lists of integers): The group of valid positions.
-    """
-    global solutions
-    global n
-    if row == n:
-        tmp0 = group.copy()
-        if not group_exists(tmp0):
-            solutions.append(tmp0)
-    else:
-        for col in range(n):
-            a = (row * n) + col
-            used_positions = any(is_attacking(pos[a], grp_pos) for grp_pos in group)
-            if not used_positions:
-                group.append(pos[a].copy())
-                build_solution(row + 1, group)
-                group.pop()
-
-
-def get_solutions():
-    """Gets the solutions for the given chessboard size.
-    """
-    global pos, n
-    pos = [(x // n, x % n) for x in range(n ** 2)]
-    a = 0
-    group = []
-    build_solution(a, group)
-
-
-n = get_input()
-get_solutions()
-for solution in solutions:
-    print(solution)
